@@ -10,17 +10,13 @@ namespace Compare
     {
         public Sha1Comparer() { }
 
-        public override IEnumerable<string> Compare(string source, string destination)
+        public override ComparisonResult Compare(string source, string destination)
         {
-            return this.Compare(source, destination, false);
-        }
+            base.Scan(source, destination);
 
-        public override IEnumerable<string> Compare(string source, string destination, bool pruneDestination)
-        {
-            base.Scan(source, destination, pruneDestination);
-
-            var list = new List<string>();
-            list.AddRange(base.NewFiles.Select(m => m = string.Concat(source, m)));
+            var modifiedFiles = new List<string>();
+            string sourceHash = null;
+            string destinationHash = null;
 
             // compare the overlap files
             foreach (var file in base.FilesToCompare)
@@ -31,18 +27,24 @@ namespace Compare
                     {
                         using (var cryptoProvider = new SHA1CryptoServiceProvider())
                         {
-                            string sourceHash = BitConverter.ToString(cryptoProvider.ComputeHash(sourceFile));
-                            string destinationHash = BitConverter.ToString(cryptoProvider.ComputeHash(destinationFile));
+                            sourceHash = BitConverter.ToString(cryptoProvider.ComputeHash(sourceFile));
+                            destinationHash = BitConverter.ToString(cryptoProvider.ComputeHash(destinationFile));
+
+                            // if the hashes don't match, the files are different. add them to the return set.
                             if (!sourceHash.Equals(destinationHash, StringComparison.OrdinalIgnoreCase))
                             {
-                                list.Add(string.Concat(source, file));
+                                modifiedFiles.Add(string.Concat(source, file));
                             }
                         }
                     }
                 }
             }
 
-            return list;
+            var newFiles = new List<string>(base.NewFiles);
+            var notInSourceFiles = new List<string>(base.FilesToDelete);
+            var result = new ComparisonResult(newFiles, modifiedFiles, notInSourceFiles);
+
+            return result;
         }
     }
 }

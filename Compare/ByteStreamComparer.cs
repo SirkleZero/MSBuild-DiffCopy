@@ -12,20 +12,16 @@ namespace Compare
 
         public ByteStreamComparer() { }
 
-        public override IEnumerable<string> Compare(string source, string destination)
+        public override ComparisonResult Compare(string source, string destination)
         {
-            return this.Compare(source, destination, false);
-        }
+            base.Scan(source, destination);
 
-        public override IEnumerable<string> Compare(string source, string destination, bool pruneDestination)
-        {
-            base.Scan(source, destination, pruneDestination);
-
-            var list = new List<string>();
-            list.AddRange(base.NewFiles.Select(m => m = string.Concat(source, m)));
+            var modifiedFiles = new List<string>();
 
             byte[] sourceBytes;
             byte[] destinationBytes;
+            BinaryReader sourceReader = null;
+            BinaryReader destinationReader = null;
 
             // compare the overlap files
             foreach (var file in base.FilesToCompare)
@@ -37,8 +33,8 @@ namespace Compare
                         if (sourceFile.Length.Equals(destinationFile.Length))
                         {
                             // if they are the same size, compare them.
-                            var sourceReader = new BinaryReader(sourceFile);
-                            var destinationReader = new BinaryReader(destinationFile);
+                            sourceReader = new BinaryReader(sourceFile);
+                            destinationReader = new BinaryReader(destinationFile);
                             do
                             {
                                 sourceBytes = sourceReader.ReadBytes(ByteStreamComparer.BufferSize);
@@ -46,11 +42,10 @@ namespace Compare
 
                                 if (sourceBytes.Length > 0)
                                 {
-                                    // compare the byte arrays
+                                    // if the arrays of bytes aren't equal, then the files are different. add them to the return set.
                                     if (!sourceBytes.ByteArrayCompare(destinationBytes))
                                     {
-                                        // they aren't equal arrays of bytes. The files are different.
-                                        list.Add(string.Concat(source, file));
+                                        modifiedFiles.Add(string.Concat(source, file));
                                         break;
                                     }
                                 }
@@ -58,13 +53,18 @@ namespace Compare
                         }
                         else
                         {
-                            // if they aren't the same size, they are different. add to output.
-                            list.Add(string.Concat(source, file));
+                            // if the files aren't the same size, obviously they are different. add them to the return set.
+                            modifiedFiles.Add(string.Concat(source, file));
                         }
                     }
                 }
             }
-            return list;
+
+            var newFiles = new List<string>(base.NewFiles);
+            var notInSourceFiles = new List<string>(base.FilesToDelete);
+            var result = new ComparisonResult(newFiles, modifiedFiles, notInSourceFiles);
+
+            return result;
         }
     }
 }

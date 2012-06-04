@@ -15,7 +15,7 @@ namespace Compare
         protected IEnumerable<string> NewFiles { get; private set; }
         protected IEnumerable<string> FilesToDelete { get; private set; }
 
-        protected void Scan(string source, string destination, bool pruneDestination)
+        protected void Scan(string source, string destination)
         {
             this.SourceFiles = Directory.EnumerateFiles(source, "*", SearchOption.AllDirectories);
             this.DestinationFiles = Directory.EnumerateFiles(destination, "*", SearchOption.AllDirectories);
@@ -34,18 +34,13 @@ namespace Compare
 
             // anything in the destination directory that isn't in the source directory. This prunes files from
             // the destination that don't exist in the source.
-            if (pruneDestination)
-            {
-                var toDeleteFiles = strippedDestinationFiles.Except(strippedSourceFiles);
-                this.FilesToDelete = toDeleteFiles.Select(m => m = string.Concat(destination, m));
-            }
+            var toDeleteFiles = strippedDestinationFiles.Except(strippedSourceFiles);
+            this.FilesToDelete = toDeleteFiles.Select(m => m = string.Concat(destination, m));
         }
 
         #region IDirectoryComparer Members
 
-        public abstract IEnumerable<string> Compare(string source, string destination);
-
-        public abstract IEnumerable<string> Compare(string source, string destination, bool pruneDestination);
+        public abstract ComparisonResult Compare(string source, string destination);
 
         #endregion
     }
