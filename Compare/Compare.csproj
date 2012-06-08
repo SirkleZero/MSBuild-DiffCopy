@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="ByteStreamComparer.cs" />
     <Compile Include="ComparisonResult.cs" />
+    <Compile Include="DiffCopyBuildTask.cs" />
     <Compile Include="DirectoryComparer.cs" />
     <Compile Include="Extensions\ByteExtensions.cs" />
     <Compile Include="IDirectoryComparer.cs" />

@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Project DefaultTargets="Debug" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <UsingTask TaskName="DiffCopyBuildTask" AssemblyFile="C:\Users\jgall\Documents\Projects\Research\MSBuild-Tasks\Compare\bin\Debug\Compare.dll" />
+  <Target Name="Debug">
+    <DiffCopyBuildTask SourceDirectory="C:\Users\jgall\Documents\Projects\Research\Knitting" DestinationDirectory="C:\Users\jgall\Documents\Projects\Research\Knitting_OLD" />
+  </Target>
+</Project>
