@@ -24,7 +24,11 @@ namespace Harness
         {
             var comparer = new ByteStreamComparer();
             var results = comparer.Compare(source, destination);
-            int i = 0;
+
+            foreach (var result in results.ModifiedFiles)
+            {
+                Console.WriteLine(result);
+            }
         }
 
         private static void ComparePerformance(string source, string destination)
