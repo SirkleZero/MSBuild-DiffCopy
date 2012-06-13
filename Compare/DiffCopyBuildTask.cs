@@ -42,9 +42,17 @@ namespace Compare
             var comparer = new ByteStreamComparer();
             var result = comparer.Compare(this.SourceDirectory, this.DestinationDirectory);
 
-            this.HandleNewFiles(result);
-            this.HandleModifiedFiles(result);
-            this.HandledNotInSourceFiles(result);
+            try
+            {
+                this.HandleNewFiles(result);
+                this.HandleModifiedFiles(result);
+                this.HandleNotInSourceFiles(result);
+            }
+            catch(Exception e)
+            {
+                base.Log.LogError(string.Format("The build task failed. The message was '{0}'", e.Message));
+                return false;
+            }
 
             return true;
         }
@@ -73,10 +81,10 @@ namespace Compare
             this.ModifiedFiles = modifiedFiles.ToArray();
         }
 
-        private void HandledNotInSourceFiles(ComparisonResult result)
+        private void HandleNotInSourceFiles(ComparisonResult result)
         {
             var notInSourceFiles = new List<ITaskItem>();
-            base.Log.LogMessage(MessageImportance.High, "Deleted Files", null);
+            base.Log.LogMessage(MessageImportance.High, "Files that don't exist in destination", null);
             foreach (var file in result.NotInSource)
             {
                 base.Log.LogMessage(MessageImportance.Normal, "\t{0}", file);
