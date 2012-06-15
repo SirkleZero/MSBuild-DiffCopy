@@ -17,6 +17,23 @@ namespace DiffCopy
 
         protected void Scan(string source, string destination)
         {
+            if (string.IsNullOrEmpty(source))
+            {
+                throw new DirectoryNotFoundException(string.Format("{0} was not found.", source));
+            }
+            if (string.IsNullOrEmpty(destination))
+            {
+                throw new DirectoryNotFoundException(string.Format("{0} was not found.", destination));
+            }
+            if (!Directory.Exists(source))
+            {
+                throw new DirectoryNotFoundException(string.Format("{0} was not found.", source));
+            }
+            if (!Directory.Exists(destination))
+            {
+                throw new DirectoryNotFoundException(string.Format("{0} was not found.", destination));
+            }
+
             this.SourceFiles = Directory.EnumerateFiles(source, "*", SearchOption.AllDirectories);
             this.DestinationFiles = Directory.EnumerateFiles(destination, "*", SearchOption.AllDirectories);
 
@@ -40,6 +57,13 @@ namespace DiffCopy
 
         #region IDirectoryComparer Members
 
+        /// <summary>
+        /// Compares the file contents for two directories and returns information about the differences.
+        /// </summary>
+        /// <param name="source">The source directory to compare to the destination.</param>
+        /// <param name="destination">The destination directory where, ultimately, files would be copied.</param>
+        /// <returns>A <see cref="ComparisonResult"/> object that contains the result of the comparison operation.</returns>
+        /// <exception cref="DirectoryNotFoundException"></exception>
         public abstract ComparisonResult Compare(string source, string destination);
 
         #endregion

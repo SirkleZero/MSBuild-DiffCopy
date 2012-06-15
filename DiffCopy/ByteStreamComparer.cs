@@ -1,17 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using DiffCopy.Extensions;
 
 namespace DiffCopy
 {
+    /// <summary>
+    /// Provides an object that compares files based on the contents of the file.
+    /// </summary>
     public class ByteStreamComparer : DirectoryComparer
     {
-        private const int BufferSize = 4096;
+        private const int BufferSize = 4096; // 4k buffer size.
 
+        /// <summary>
+        /// 	<para>Initializes an instance of the <see cref="ByteStreamComparer"/> class.</para>
+        /// </summary>
         public ByteStreamComparer() { }
 
+        /// <summary>
+        /// Compares the file contents for two directories and returns information about the differences.
+        /// </summary>
+        /// <param name="source">The source directory to compare to the destination.</param>
+        /// <param name="destination">The destination directory where, ultimately, files would be copied.</param>
+        /// <returns>A <see cref="ComparisonResult"/> object that contains the result of the comparison operation.</returns>
+        /// <exception cref="DirectoryNotFoundException">
+        /// </exception>
         public override ComparisonResult Compare(string source, string destination)
         {
             base.Scan(source, destination);
