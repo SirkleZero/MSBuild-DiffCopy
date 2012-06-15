@@ -48,14 +48,14 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Compare\Compare.csproj">
-      <Project>{C6A2A418-B357-4B40-BE4C-69F3CFCA27A6}</Project>
-      <Name>Compare</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="app.config" />
     <None Include="debug.msbuild" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DiffCopy\DiffCopy.csproj">
+      <Project>{C6A2A418-B357-4B40-BE4C-69F3CFCA27A6}</Project>
+      <Name>DiffCopy</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 
-namespace Compare
+namespace DiffCopy
 {
     public class Sha1Comparer : DirectoryComparer
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Compare
+namespace DiffCopy
 {
     public interface IDirectoryComparer
     {

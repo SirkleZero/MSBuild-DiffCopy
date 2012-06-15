@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace Compare.Extensions
+namespace DiffCopy.Extensions
 {
     public static class ByteExtensions
     {

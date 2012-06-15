@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Compare.Extensions;
+using DiffCopy.Extensions;
 
-namespace Compare
+namespace DiffCopy
 {
     public class ByteStreamComparer : DirectoryComparer
     {
