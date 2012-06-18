@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 
@@ -60,37 +61,47 @@ namespace DiffCopy
         private void HandleNewFiles(ComparisonResult result)
         {
             var newFiles = new List<ITaskItem>();
-            base.Log.LogMessage(MessageImportance.High, "New Files", null);
-            foreach (var file in result.NewFiles)
-            {
-                base.Log.LogMessage(MessageImportance.Normal, "\t{0}", file);
-                newFiles.Add(new TaskItem(file));
-            }
+            base.Log.LogMessage(MessageImportance.High, "New Files");
+
+            this.HandleFiles(result.NewFiles, newFiles);
+
             this.NewFiles = newFiles.ToArray();
         }
 
         private void HandleModifiedFiles(ComparisonResult result)
         {
             var modifiedFiles = new List<ITaskItem>();
-            base.Log.LogMessage(MessageImportance.High, "Modified Files", null);
-            foreach (var file in result.ModifiedFiles)
-            {
-                base.Log.LogMessage(MessageImportance.Normal, "\t{0}", file);
-                modifiedFiles.Add(new TaskItem(file));
-            }
+            base.Log.LogMessage(MessageImportance.High, "Modified Files");
+
+            this.HandleFiles(result.ModifiedFiles, modifiedFiles);
+
             this.ModifiedFiles = modifiedFiles.ToArray();
         }
 
         private void HandleNotInSourceFiles(ComparisonResult result)
         {
             var notInSourceFiles = new List<ITaskItem>();
-            base.Log.LogMessage(MessageImportance.High, "Files that don't exist in destination", null);
-            foreach (var file in result.NotInSource)
-            {
-                base.Log.LogMessage(MessageImportance.Normal, "\t{0}", file);
-                notInSourceFiles.Add(new TaskItem(file));
-            }
+            base.Log.LogMessage(MessageImportance.High, "Files that exist on destination but not source");
+
+            this.HandleFiles(result.NotInSource, notInSourceFiles);
+
             this.NotInSourceFiles = notInSourceFiles.ToArray();
+        }
+
+        private void HandleFiles(IEnumerable<string> results, List<ITaskItem> destination)
+        {
+            if (results.Count().Equals(0))
+            {
+                base.Log.LogMessage(MessageImportance.Normal, "No files found.");
+            }
+            else
+            {
+                foreach (var file in results)
+                {
+                    base.Log.LogMessage(MessageImportance.Normal, "\t{0}", file);
+                    destination.Add(new TaskItem(file));
+                }
+            }
         }
     }
 }
