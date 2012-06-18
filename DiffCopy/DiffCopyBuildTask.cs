@@ -99,7 +99,14 @@ namespace DiffCopy
                 foreach (var file in results)
                 {
                     base.Log.LogMessage(MessageImportance.Normal, "\t{0}", file);
-                    destination.Add(new TaskItem(file));
+
+                    var metadata = new Dictionary<string, string>();
+                    metadata.Add("RecursiveDir", "Joshie");
+                    metadata.Add("Extension", Path.GetExtension(file));
+                    metadata.Add("Filename", Path.GetFileNameWithoutExtension(file));
+
+                    var item = new TaskItem(file, metadata);
+                    destination.Add(item);
                 }
             }
         }
