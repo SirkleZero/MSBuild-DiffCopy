@@ -100,10 +100,21 @@ namespace DiffCopy
                 {
                     base.Log.LogMessage(MessageImportance.Normal, "\t{0}", file);
 
+                    // given the file...
+                    // C:\MyProject\Source\Program.cs
+                    // output the following meta data
                     var metadata = new Dictionary<string, string>();
-                    metadata.Add("RecursiveDir", "Joshie");
-                    metadata.Add("Extension", Path.GetExtension(file));
+                    metadata.Add("FullPath", file);
+                    metadata.Add("RootDir", @"C:\");
                     metadata.Add("Filename", Path.GetFileNameWithoutExtension(file));
+                    metadata.Add("Extension", Path.GetExtension(file));
+                    metadata.Add("RelativeDir", @"\Source");
+                    metadata.Add("Directory", @"MyProject\Source\");
+                    metadata.Add("RecursiveDir", @"MySolution\MyProject\Source\");// take off the C:\?
+                    metadata.Add("Identity", @"Source\Program.cs");
+                    metadata.Add("ModifiedTime", "2004-07-01 00:21:31.5073316");
+                    metadata.Add("CreatedTime", "2004-07-01 00:21:31.5073316");
+                    metadata.Add("AccessedTime", "2004-07-01 00:21:31.5073316");                    
 
                     var item = new TaskItem(file, metadata);
                     destination.Add(item);
