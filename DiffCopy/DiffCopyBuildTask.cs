@@ -45,9 +45,9 @@ namespace DiffCopy
 
             try
             {
-                this.HandleNewFiles(result);
-                this.HandleModifiedFiles(result);
-                this.HandleNotInSourceFiles(result);
+                this.HandleNewFiles(result, this.SourceDirectory);
+                this.HandleModifiedFiles(result, this.SourceDirectory);
+                this.HandleNotInSourceFiles(result, this.DestinationDirectory);
             }
             catch (Exception e)
             {
@@ -58,41 +58,41 @@ namespace DiffCopy
             return true;
         }
 
-        private void HandleNewFiles(ComparisonResult result)
+        private void HandleNewFiles(ComparisonResult result, string rootPath)
         {
             var newFiles = new List<ITaskItem>();
             base.Log.LogMessage(MessageImportance.High, "New Files", null);
 
-            this.HandleFiles(result.NewFiles, newFiles);
+            this.HandleFiles(result.NewFiles, newFiles, rootPath);
 
             this.NewFiles = newFiles.ToArray();
         }
 
-        private void HandleModifiedFiles(ComparisonResult result)
+        private void HandleModifiedFiles(ComparisonResult result, string rootPath)
         {
             var modifiedFiles = new List<ITaskItem>();
             base.Log.LogMessage(MessageImportance.High, "Modified Files", null);
 
-            this.HandleFiles(result.ModifiedFiles, modifiedFiles);
+            this.HandleFiles(result.ModifiedFiles, modifiedFiles, rootPath);
 
             this.ModifiedFiles = modifiedFiles.ToArray();
         }
 
-        private void HandleNotInSourceFiles(ComparisonResult result)
+        private void HandleNotInSourceFiles(ComparisonResult result, string rootPath)
         {
             var notInSourceFiles = new List<ITaskItem>();
             base.Log.LogMessage(MessageImportance.High, "Files that exist on destination but not source", null);
 
-            this.HandleFiles(result.NotInSource, notInSourceFiles);
+            this.HandleFiles(result.NotInSource, notInSourceFiles, rootPath);
 
             this.NotInSourceFiles = notInSourceFiles.ToArray();
         }
 
-        private void HandleFiles(IEnumerable<string> results, List<ITaskItem> destination)
+        private void HandleFiles(IEnumerable<string> results, List<ITaskItem> destination, string rootPath)
         {
             if (results.Count().Equals(0))
             {
-                base.Log.LogMessage(MessageImportance.Normal, "No files found.");
+                base.Log.LogMessage(MessageImportance.Normal, "\tNo files found.");
             }
             else
             {
@@ -104,48 +104,22 @@ namespace DiffCopy
                     var modified = info.LastWriteTime;
                     var created = info.CreationTime;
                     var accessed = info.LastAccessTime;
-
                     var fullPath = Path.GetFullPath(file);
 
-                    // given the file...
-                    // C:\MyProject\Source\Program.cs
-                    // output the following meta data
                     var metadata = new Dictionary<string, string>();
                     metadata.Add("FullPath", fullPath);
-                    //metadata.Add("RootDir", Path.GetPathRoot(file));
-                    //metadata.Add("Filename", Path.GetFileNameWithoutExtension(file));
-                    //metadata.Add("Extension", Path.GetExtension(file));
-                    //metadata.Add("RelativeDir", @"\Source");
-                    //metadata.Add("Directory", @"MyProject\Source\");
+                    metadata.Add("RootDir", Path.GetPathRoot(file));
+                    metadata.Add("Filename", Path.GetFileNameWithoutExtension(file));
+                    metadata.Add("Extension", Path.GetExtension(file));
+                    metadata.Add("ModifiedTime", modified.ToString("yyyy-MM-dd hh:mm:ss.FFFFFFF"));
+                    metadata.Add("CreatedTime", created.ToString("yyyy-MM-dd hh:mm:ss.FFFFFFF"));
+                    metadata.Add("AccessedTime", accessed.ToString("yyyy-MM-dd hh:mm:ss.FFFFFFF"));
 
-                    //base.Log.LogMessage(MessageImportance.High, string.Format("fullPath: {0}", fullPath), null);
-
-                    var directory = Path.GetDirectoryName(fullPath);
-                    //base.Log.LogMessage(MessageImportance.High, string.Format("directory: {0}", directory), null);
-
-                    var rootPath = Path.GetPathRoot(fullPath);
-                    //base.Log.LogMessage(MessageImportance.High, string.Format("rootPath: {0}", rootPath), null);
-
-                    var directorySansDrive = directory.Replace(rootPath, string.Empty);
-                    //base.Log.LogMessage(MessageImportance.High, string.Format("directorySansDrive: {0}", directorySansDrive), null);
-                    
-                    var recursiveDirectory = directorySansDrive + @"\";
-                    //base.Log.LogMessage(MessageImportance.High, string.Format("recursiveDirectory: {0}", recursiveDirectory), null);
-
+                    var recursiveDirectory = file.Replace(rootPath, string.Empty).Replace(Path.GetFileName(file), string.Empty);
                     metadata.Add("RecursiveDir", recursiveDirectory);
 
-                    
-
-                    //metadata.Add("Identity", @"Source\Program.cs");
-                    ////metadata.Add("ModifiedTime", modified.ToString());
-                    ////metadata.Add("CreatedTime", created.ToString());
-                    ////metadata.Add("AccessedTime", accessed.ToString());
-
-
-                    //metadata.Add("ModifiedTime", "2004-07-01 00:21:31.5073316");
-                    //metadata.Add("CreatedTime", "2004-07-01 00:21:31.5073316");
-                    //metadata.Add("AccessedTime", "2004-07-01 00:21:31.5073316");
-
+                    // NOTE: The following well-known meta data aren't implemented at this time.
+                    // RelativeDir, Directory, Identity
 
                     var item = new TaskItem(file, metadata);
                     destination.Add(item);
