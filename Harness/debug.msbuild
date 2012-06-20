@@ -2,6 +2,6 @@
 <Project DefaultTargets="Debug" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <UsingTask TaskName="DiffCopyBuildTask" AssemblyFile="C:\Users\jgall\Documents\Projects\MSBuild-DiffCopy\DiffCopy\bin\Debug\DiffCopy.dll" />
   <Target Name="Debug">
-    <DiffCopyBuildTask SourceDirectory="C:\Users\jgall\Documents\Projects\Aurora Health Care\PrecompiledWeb\_PublishedWebsites\Aurora.Web" DestinationDirectory="C:\Users\jgall\Desktop\Aurora Staging\Aurora.Web" />
+    <DiffCopyBuildTask SourceDirectory="C:\Users\jgall\Documents\Projects\Research\Knitting" DestinationDirectory="C:\Users\jgall\Documents\Projects\Research\Knitting_new" />
   </Target>
 </Project>
