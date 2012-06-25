@@ -5,16 +5,55 @@ using System.Linq;
 
 namespace DiffCopy
 {
+    /// <summary>
+    /// Object that provides functionality to compare a source directory to a destination directory.
+    /// </summary>
     public abstract class DirectoryComparer : IDirectoryComparer
     {
+        #region constructors
+
+        /// <summary>
+        /// 	<para>Initializes an instance of the <see cref="DirectoryComparer"/> class.</para>
+        /// </summary>
         public DirectoryComparer() { }
 
-        protected IEnumerable<string> SourceFiles { get; private set; }
-        protected IEnumerable<string> DestinationFiles { get; private set; }
-        protected IEnumerable<string> FilesToCompare { get; private set; }
-        protected IEnumerable<string> NewFiles { get; private set; }
-        protected IEnumerable<string> FilesToDelete { get; private set; }
+        #endregion
 
+        #region protected properties
+
+        /// <summary>
+        /// Gets an <see cref="IEnumerable<string>"/> of files from the source directory.
+        /// </summary>
+        protected IEnumerable<string> SourceFiles { get; private set; }
+
+        /// <summary>
+        /// Gets an <see cref="IEnumerable<string>"/> of files from the destination directory.
+        /// </summary>
+        protected IEnumerable<string> DestinationFiles { get; private set; }
+
+        /// <summary>
+        /// Gets an <see cref="IEnumerable<string>"/> of files that need to be compared.
+        /// </summary>
+        protected IEnumerable<string> FilesToCompare { get; private set; }
+
+        /// <summary>
+        /// Gets an <see cref="IEnumerable<string>"/> of files that are determined to be new.
+        /// </summary>
+        protected IEnumerable<string> NewFiles { get; private set; }
+
+        /// <summary>
+        /// Gets an <see cref="IEnumerable<string>"/> of files that are not in the source directory, but are in the destination directory.
+        /// </summary>
+        protected IEnumerable<string> NotInSource { get; private set; }
+
+        #endregion
+
+        /// <summary>
+        /// Scans the two directories to create the various file lists used.
+        /// </summary>
+        /// <param name="source">The source directory to compare to the destination directory. Must be an actual path on disk.</param>
+        /// <param name="destination">The destination directory that the source directory will be compared to. Must be an actual path on disk.</param>
+        /// <exception cref="DirectoryNotFoundException"></exception>
         protected void Scan(string source, string destination)
         {
             if (string.IsNullOrEmpty(source))
@@ -52,7 +91,7 @@ namespace DiffCopy
             // anything in the destination directory that isn't in the source directory. This prunes files from
             // the destination that don't exist in the source.
             var toDeleteFiles = strippedDestinationFiles.Except(strippedSourceFiles);
-            this.FilesToDelete = toDeleteFiles.Select(m => m = string.Concat(destination, m));
+            this.NotInSource = toDeleteFiles.Select(m => m = string.Concat(destination, m));
         }
 
         #region IDirectoryComparer Members

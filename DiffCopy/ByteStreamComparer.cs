@@ -23,8 +23,7 @@ namespace DiffCopy
         /// <param name="source">The source directory to compare to the destination.</param>
         /// <param name="destination">The destination directory where, ultimately, files would be copied.</param>
         /// <returns>A <see cref="ComparisonResult"/> object that contains the result of the comparison operation.</returns>
-        /// <exception cref="DirectoryNotFoundException">
-        /// </exception>
+        /// <exception cref="DirectoryNotFoundException"></exception>
         public override ComparisonResult Compare(string source, string destination)
         {
             base.Scan(source, destination);
@@ -74,7 +73,7 @@ namespace DiffCopy
             }
 
             var newFiles = new List<string>(base.NewFiles);
-            var notInSourceFiles = new List<string>(base.FilesToDelete);
+            var notInSourceFiles = new List<string>(base.NotInSource);
             var result = new ComparisonResult(newFiles, modifiedFiles, notInSourceFiles);
 
             return result;

@@ -7,22 +7,60 @@ using Microsoft.Build.Utilities;
 
 namespace DiffCopy
 {
+    /// <summary>
+    /// A custom MSBuild Task object that is used to compare two directories for efficient deployment of large numbers of files.
+    /// </summary>
     public class DiffCopyBuildTask : Task
     {
+        #region constructors
+
+        /// <summary>
+        /// 	<para>Initializes an instance of the <see cref="DiffCopyBuildTask"/> class.</para>
+        /// </summary>
         public DiffCopyBuildTask() { }
 
+        #endregion
+
+        #region public properties
+
+        /// <summary>
+        /// Gets or Sets the source directory to compare to the destination directory. Must be an actual path on disk.
+        /// </summary>
         [Required]
         public string SourceDirectory { get; set; }
+
+        /// <summary>
+        /// Gets or Sets the destination directory that the source directory will be compared to. Must be an actual path on disk.
+        /// </summary>
         [Required]
         public string DestinationDirectory { get; set; }
 
+        /// <summary>
+        /// Gets or Sets the <see cref="ITaskItem[]"/> that contains the files that exist in the source but not the destination directory.
+        /// </summary>
         [Output]
         public ITaskItem[] NewFiles { get; set; }
+
+        /// <summary>
+        /// Gets or Sets the <see cref="ITaskItem[]"/> that contains the files that exist in both the source and destination directories that are different.
+        /// </summary>
         [Output]
         public ITaskItem[] ModifiedFiles { get; set; }
+
+        /// <summary>
+        /// Gets or Sets the <see cref="ITaskItem[]"/> that contains the files that exist in the destination, but not the source directory.
+        /// </summary>
         [Output]
         public ITaskItem[] NotInSourceFiles { get; set; }
 
+        #endregion
+
+        #region public methods
+
+        /// <summary>
+        ///     Executes the Task.
+        /// </summary>
+        /// <returns>true if the task successfully executed; otherwise, false.</returns>
         public override bool Execute()
         {
             if (!Directory.Exists(this.SourceDirectory))
@@ -57,6 +95,10 @@ namespace DiffCopy
 
             return true;
         }
+
+        #endregion
+
+        #region private methods
 
         private void HandleNewFiles(ComparisonResult result, string rootPath)
         {
@@ -126,5 +168,7 @@ namespace DiffCopy
                 }
             }
         }
+
+        #endregion
     }
 }

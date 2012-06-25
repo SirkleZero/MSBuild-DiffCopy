@@ -13,7 +13,7 @@ namespace DiffCopy.Extensions
         /// </summary>
         /// <param name="b1">The first array of bytes to compare.</param>
         /// <param name="b2">The array of bytes to compare.</param>
-        /// <returns>true if the byte arrays are equal; otherwise false</returns>
+        /// <returns>true if the byte arrays are equal; otherwise, false</returns>
         public static bool ByteArrayCompare(this byte[] b1, byte[] b2)
         {
             if (b1 == b2) return true; //reference equality check
