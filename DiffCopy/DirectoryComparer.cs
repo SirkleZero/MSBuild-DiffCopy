@@ -73,8 +73,8 @@ namespace DiffCopy
                 throw new DirectoryNotFoundException(string.Format("{0} was not found.", destination));
             }
 
-            this.SourceFiles = Directory.EnumerateFiles(source, "*", SearchOption.AllDirectories);
-            this.DestinationFiles = Directory.EnumerateFiles(destination, "*", SearchOption.AllDirectories);
+            this.SourceFiles = DirectoryComparer.Traverse(source);
+            this.DestinationFiles = DirectoryComparer.Traverse(destination);
 
             // need to strip the root directories from the file lists above. This will give us relative paths for comparison.
             var strippedSourceFiles = this.SourceFiles.Select(m => m = m.Replace(source, string.Empty));
@@ -92,6 +92,60 @@ namespace DiffCopy
             // the destination that don't exist in the source.
             var toDeleteFiles = strippedDestinationFiles.Except(strippedSourceFiles);
             this.NotInSource = toDeleteFiles.Select(m => m = string.Concat(destination, m));
+        }
+
+        private static IEnumerable<string> Traverse(string root)
+        {
+            if (!Directory.Exists(root))
+            {
+                throw new DirectoryNotFoundException(string.Format("{0} was not found.", root));
+            }
+
+            var directories = new Stack<string>();
+            directories.Push(root);
+
+            string[] subDirectories = null;
+            string[] files = null;
+            while (directories.Count > 0)
+            {
+                var currentDirectory = directories.Pop();
+
+                try
+                {
+                    subDirectories = Directory.GetDirectories(currentDirectory);
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    continue;
+                }
+                catch (DirectoryNotFoundException)
+                {
+                    continue;
+                }
+
+                try
+                {
+                    files = Directory.GetFiles(currentDirectory);
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    continue;
+                }
+                catch (DirectoryNotFoundException)
+                {
+                    continue;
+                }
+
+                foreach (var file in files)
+                {
+                    yield return file;
+                }
+
+                foreach (var directory in subDirectories)
+                {
+                    directories.Push(directory);
+                }
+            }
         }
 
         #region IDirectoryComparer Members
