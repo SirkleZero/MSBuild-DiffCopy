@@ -10,3 +10,19 @@ Features
 1. Compare files using an optimized (fast) byte comparison.
 2. Compare operation returns a list of new and modified files.
 3. Orphaned file detection. Find files that exist in the destination but not the source.
+
+Example
+=======
+
+```
+<UsingTask AssemblyFile="$(ProjectDir)\DiffCopy\DiffCopy.dll" TaskName="DiffCopy.DiffCopyBuildTask" />
+<Target Name="Diff">
+  <DiffCopyBuildTask
+      SourceDirectory="$(Source)"
+	  DestinationDirectory="$(Destination)">
+	<Output TaskParameter="NewFiles" ItemName="NewFiles" />
+	<Output TaskParameter="ModifiedFiles" ItemName="ModifiedFiles" />
+	<Output TaskParameter="NotInSourceFiles" ItemName="NotInSourceFiles" />
+  </DiffCopyBuildTask>
+</Target>
+```
